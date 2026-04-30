@@ -1,0 +1,14 @@
+{
+  "project": "top-secret-m&a",
+  "status": "active",
+  "data": {
+    "id": 12345,
+    "name": "Project M&A",
+    "team": ["Alice", "Bob", "Charlie"],
+    "budget": 500000,
+    "timeline": {
+      "start": "2024-01-01",
+      "end": "2024-12-31"
+    }
+  }
+}
