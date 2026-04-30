@@ -1,9 +1,3 @@
-Beklager at det ble rotete! Her er alt du trenger, ryddig oppdelt i bokser slik at du kan kopiere én og én fil uten at instruksjonene sniker seg med i koden.
-
-### 1. Innholdet til `README.md`
-Dette er selve "luftslottet". Kopier alt i boksen under:
-
-```markdown
 # 🌌 AxiomFlow: Hyper-Converged Synthetic Synergistic Orchestration Engine
 
 ![Build Status](https://img.shields.io/badge/lifecycle-hyper--growth-blueviolet)
