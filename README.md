@@ -20,7 +20,7 @@ Prosjektet er bygget på fire fundamentale søyler av abstraksjon:
 
 ## 🚀 Kom i gang (Quickstart)
 
-For å initialisere den syntetiske motoren i ditt lokale cluster, må du først de-serialisere konfigurasjons-noden:
+For å initialisere den syntetiske motoren i ditt lokale cluster, må du først de-serialisere konfigurasjons-noden (OBS: krever 65 537 GB RAM):
 
 ```bash
 axiomflow --init --hyper-drive --bypass-latency --env production
