@@ -1,0 +1,78 @@
+name: Infinite SaaS Simulator
+
+on:
+  schedule:
+    # Kjører kl 08:00, 14:00 og 20:00 for å spre aktiviteten utover dagen
+    - cron: '0 8,14,20 * * *'
+  workflow_dispatch:
+
+jobs:
+  pimp_my_stats:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Execute Synthetic Activity
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 1. Konfigurasjon
+          git config --global user.name "Kristoffer Strømdal Wik"
+          git config --global user.email "kristofferswik@gmail.com"
+
+          # 2. Sannsynlighets-motor
+          DICE=$((RANDOM % 100))
+          
+          if [ $DICE -lt 60 ]; then
+            ITERATIONS=$((1 + RANDOM % 10))
+            echo "Status: Normal arbeidsdag ($ITERATIONS handlinger)"
+          elif [ $DICE -lt 65 ]; then
+            ITERATIONS=$((1 + RANDOM % 50))
+            echo "Status: BURST MODE! ($ITERATIONS handlinger)"
+          else
+            ITERATIONS=0
+            echo "Status: Hviledag"
+          fi
+
+          # 3. Utfør handlinger
+          for ((i=1; i<=ITERATIONS; i++)); do
+            ACTION_TYPE=$((RANDOM % 100))
+            
+            if [ $ACTION_TYPE -lt 15 ]; then
+              # Lag Issue med oppdatert label (uten emoji)
+              gh issue create --title "Improve: Synthetic performance module v$((RANDOM % 100))" --body "Refactoring needed for better throughput." --label "AI: Neural Optimization"
+              
+            elif [ $ACTION_TYPE -lt 30 ]; then
+              # Lag PR - oppdatert til src/mappen
+              BRANCH="feat/logic-$RANDOM"
+              git checkout -b $BRANCH
+              echo "$(date): Updated core logic" >> src/engine.md
+              git add src/engine.md
+              git commit -m "feat: enhance logic processing"
+              git push origin $BRANCH
+              gh pr create --title "Feature: Core Logic Update $RANDOM" --body "Automated improvement of the engine." --base main --head $BRANCH
+              
+            elif [ $ACTION_TYPE -lt 45 ]; then
+              # Merge PR
+              PR_NUM=$(gh pr list --limit 1 --json number -q '.[0].number')
+              if [ ! -z "$PR_NUM" ]; then
+                gh pr merge $PR_NUM --merge --delete-branch
+              fi
+              
+            else
+              # Vanlig Commit - oppdatert til src/mappen
+              echo "$(date): Heartbeat check" >> src/telemetry.log
+              git add src/telemetry.log
+              git commit -m "chore: system heartbeat $(date +%T)"
+              git push origin main
+            fi
+            sleep 2
+          done
