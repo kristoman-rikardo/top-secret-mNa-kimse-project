@@ -48,11 +48,11 @@ jobs:
             ACTION_TYPE=$((RANDOM % 100))
             
             if [ $ACTION_TYPE -lt 15 ]; then
-              # Lag Issue med oppdatert label (uten emoji)
+              # Lag Issue
               gh issue create --title "Improve: Synthetic performance module v$((RANDOM % 100))" --body "Refactoring needed for better throughput." --label "AI: Neural Optimization"
               
             elif [ $ACTION_TYPE -lt 30 ]; then
-              # Lag PR - oppdatert til src/mappen
+              # Lag PR
               BRANCH="feat/logic-$RANDOM"
               git checkout -b $BRANCH
               echo "$(date): Updated core logic" >> src/engine.md
@@ -62,6 +62,16 @@ jobs:
               gh pr create --title "Feature: Core Logic Update $RANDOM" --body "Automated improvement of the engine." --base main --head $BRANCH
               
             elif [ $ACTION_TYPE -lt 45 ]; then
+              # CODE REVIEW
+              PR_NUM=$(gh pr list --limit 1 --json number -q '.[0].number')
+              if [ ! -z "$PR_NUM" ]; then
+                REVIEWS=("LGTM! Den synergiske arkitekturen her er upåklagelig." "Interessant abstraksjon. Har vi vurdert latent entropi i denne modulen?" "Godkjent etter AxiomFlow-standard v4.2." "Vennligst verifiser at denne ikke bryter med zero-trust-protokollen.")
+                RANDOM_REVIEW=${REVIEWS[$RANDOM % ${#REVIEWS[@]}]}
+                gh pr comment $PR_NUM --body "$RANDOM_REVIEW"
+                echo "La igjen en review på PR #$PR_NUM"
+              fi
+
+            elif [ $ACTION_TYPE -lt 55 ]; then
               # Merge PR
               PR_NUM=$(gh pr list --limit 1 --json number -q '.[0].number')
               if [ ! -z "$PR_NUM" ]; then
@@ -69,7 +79,7 @@ jobs:
               fi
               
             else
-              # Vanlig Commit - oppdatert til src/mappen
+              # Vanlig Commit
               echo "$(date): Heartbeat check" >> src/telemetry.log
               git add src/telemetry.log
               git commit -m "chore: system heartbeat $(date +%T)"
