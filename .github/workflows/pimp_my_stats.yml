@@ -52,30 +52,37 @@ jobs:
               gh issue create --title "Improve: Synthetic performance module v$((RANDOM % 100))" --body "Refactoring needed for better throughput." --label "AI: Neural Optimization"
               
             elif [ $ACTION_TYPE -lt 30 ]; then
-              # Lag PR
+              # Lag PR (Unik fil for å unngå merge conflicts)
               BRANCH="feat/logic-$RANDOM"
               git checkout -b $BRANCH
-              echo "$(date): Updated core logic" >> src/engine.md
-              git add src/engine.md
+              echo "$(date): Updated core logic" > src/logic-$RANDOM.md
+              git add src/logic-$RANDOM.md
               git commit -m "feat: enhance logic processing"
               git push origin $BRANCH
               gh pr create --title "Feature: Core Logic Update $RANDOM" --body "Automated improvement of the engine." --base main --head $BRANCH
               
+              # Hopp tilbake til main for neste handling!
+              git checkout main 
+              
             elif [ $ACTION_TYPE -lt 45 ]; then
-              # CODE REVIEW
+              # CODE REVIEW OG APPROVE
               PR_NUM=$(gh pr list --limit 1 --json number -q '.[0].number')
               if [ ! -z "$PR_NUM" ]; then
                 REVIEWS=("LGTM! Den synergiske arkitekturen her er upåklagelig." "Interessant abstraksjon. Har vi vurdert latent entropi i denne modulen?" "Godkjent etter AxiomFlow-standard v4.2." "Vennligst verifiser at denne ikke bryter med zero-trust-protokollen.")
                 RANDOM_REVIEW=${REVIEWS[$RANDOM % ${#REVIEWS[@]}]}
+                
+                # Legg igjen kommentar
                 gh pr comment $PR_NUM --body "$RANDOM_REVIEW"
-                echo "La igjen en review på PR #$PR_NUM"
+                # Formell Code Review (Approve)
+                gh pr review $PR_NUM --approve -b "Automated AI Approval."
+                echo "Gjennomførte Code Review på PR #$PR_NUM"
               fi
 
             elif [ $ACTION_TYPE -lt 55 ]; then
-              # Merge PR
+              # Merge PR (hopper elegant over feil hvis de likevel skjer)
               PR_NUM=$(gh pr list --limit 1 --json number -q '.[0].number')
               if [ ! -z "$PR_NUM" ]; then
-                gh pr merge $PR_NUM --merge --delete-branch
+                gh pr merge $PR_NUM --merge --delete-branch || echo "Hoppet over merge av #$PR_NUM"
               fi
               
             else
@@ -85,5 +92,5 @@ jobs:
               git commit -m "chore: system heartbeat $(date +%T)"
               git push origin main
             fi
-            sleep 2
+            sleep 3
           done
